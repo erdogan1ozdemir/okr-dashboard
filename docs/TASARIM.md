@@ -30,7 +30,7 @@ Unvan (`title`) kişiye bağlıdır: `jr_consultant · consultant · sr_consulta
 | Director · GMY · CEO | görür | herkesinkini görür | okur, yazar | hayır |
 | Admin (bayrak) | - | - | - | marka, ekip, kişi, unvan yönetimi |
 
-Admin bir unvan değil, kullanıcıya verilen bayraktır; ilk admin tohum verisinden gelir. "Manager yalnızca kendi ekibini görür" varsayımdır; Director/GMY/CEO tüm ekipleri görür.
+Admin bir unvan değil, kullanıcıya verilen bayraktır; ilk admin tohum verisinden gelir. Manager yalnızca kendi ekibindekilerin OKR'larını görür; Director/GMY/CEO tüm ekipleri görür.
 
 OKR, teslim, aylık yükümlülük, haftalık efor ve hafta notu **kişiseldir**. Marka notları, temas kayıtları, sinyaller ve vault **ortaktır**. Bu ayrım veri modelinde `user_id` ile değil, tabloların kendisiyle yapılır; ortak tablolarda `author_id` yalnızca "kim yazdı" bilgisidir.
 
@@ -52,7 +52,7 @@ OKR, teslim, aylık yükümlülük, haftalık efor ve hafta notu **kişiseldir**
 Sekmeler:
 1. **Özet** · künye (sektör, web, sözleşme başlangıcı), hizmet veren ekipler ve sorumlular, risk seviyesi ve sinyaller, son 5 not, açık teslim adımları (bu markaya bağlı).
 2. **Notlar** · tüm kullanıcıların notları; filtre: yazar, tür (iletişim · önemli · ticari · markada olan · sinyal · genel), hafta/ay. Varsayılan sıralama yeni → eski, "Benim notlarım" hızlı filtresi.
-3. **Vault** · aylık backlink bütçesi, içerik bütçesi, altyapı ekibi, IT ekibi, marka yöneticisi, içerdeki ekip boyutu, kullanılan araçlar, raporlama ritmi. Her alanın son güncelleyeni ve tarihi görünür; değişiklik geçmişi tutulur.
+3. **Vault** · ekip bazlı bölümler. Ortak alanlar (marka yöneticisi, markadaki ekip boyutu, IT ekibi, altyapı ajansı) en üstte; sonra markaya hizmet veren her ekibin kendi alan seti (SEO & GEO: backlink ve içerik bütçesi, hizmet kapsamı · Performance Marketing: aylık ortalama reklam bütçesi, platformlar · vb.). Alan setlerini ekip yöneticisi ya da admin tanımlar (`vault_field_defs`), değerler marka başına girilir. Her değerin son güncelleyeni ve tarihi görünür; değişiklik geçmişi tutulur.
 4. **Kişiler** · markadaki iletişim kişileri: ad, rol, e-posta, telefon, hangi konuda muhatap, kim tanıştırdı.
 5. **Zaman çizelgesi** · notlar, risk değişiklikleri, vault güncellemeleri, toplantılar tek akışta.
 6. **Devir özeti** · sistemin ürettiği "bu markayı 10 dakikada anla" sayfası: vault + sinyaller + son 3 ayın öne çıkan notları + açık işler. Yeni katılan kişi için.
@@ -83,7 +83,7 @@ Sekmeler:
 
 Kimlik: `users`, `accounts`, `sessions` (Auth.js) · `teams` · `user_teams`? Hayır: kişi tek ekipte (`users.team_id`).
 
-Marka: `brands` (parent_id ile hiyerarşi) · `brand_services` (marka × ekip) · `brand_assignments` (marka × kişi × rol) · `brand_vault` (1-1, yapılandırılmış alanlar) · `brand_vault_history` · `brand_contacts` · `brand_signals` · `brand_risk_history` · `brand_match_rules`.
+Marka: `brands` (parent_id ile hiyerarşi) · `brand_services` (marka × ekip) · `brand_assignments` (marka × kişi × rol) · `vault_field_defs` (ekip bazlı alan tanımları, team_id boşsa ortak) · `brand_vault_values` (marka × alan) · `brand_vault_history` · `brand_contacts` · `brand_signals` · `brand_risk_history` · `brand_match_rules`.
 
 Ortak notlar: `brand_notes` (tür, gövde, hafta, opsiyonel sinyal ve toplantı bağı, yazar) · `brand_contact_log` (kişi × marka × hafta ✓).
 
@@ -95,18 +95,20 @@ Sistem: `audit_log` · `digest_prefs`.
 
 Tam şema `src/db/schema.ts`.
 
-## 7. Aşamalar
+## 7. Çalışma modu
 
-1. **İskelet** (bu teslim) · repo, şema, auth, yetki, rotalar, tohum verisi, README.
-2. **Kişisel çalışma alanı** · Bu hafta, Aylık, Teslimler, OKR'lar ekranlarının işlevi; pano verisinin içe aktarımı.
-3. **Marka katmanı** · Markalarım, Inbound markaları, marka detayı (Özet, Notlar, Vault, Kişiler).
-4. **Entegrasyon** · takvim, haftalık e-posta, zaman çizelgesi, devir özeti, arama.
-5. **Görsel tasarım** · Claude Design çıktısının bileşenlere uygulanması.
+`DATABASE_URL` tanımlı değilse uygulama **kurgusal veri modunda** açılır: giriş atlanır, sabit bir örnek kullanıcı oturumdaymış gibi davranır, tüm ekranlar `src/lib/data/mock.ts` verisiyle dolar. Amaç: veritabanı ve Google OAuth kurulmadan ekranların görülebilmesi ve Claude Design ile tasarlanabilmesi. Veri katmanı `src/lib/data/index.ts` arayüzünün arkasındadır; Postgres bağlanınca yalnızca `db.ts` uygulaması yazılır, ekranlar değişmez.
+
+## 8. Aşamalar
+
+1. **İskelet** · repo, şema, auth, yetki, rotalar, tohum verisi, README. Tamam.
+2. **Ekranlar, kurgusal veriyle** · tüm ekranlar yapısal olarak kurulu, sahte veri katmanıyla çalışır. Tamam.
+3. **Görsel tasarım** · Claude Design ile görünüm; çıktı `src/components` altına uygulanır.
+4. **Altyapı bağlantısı** · Postgres, Google OAuth, veri katmanının DB uygulaması, server action'lar, pano verisinin içe aktarımı.
+5. **Entegrasyon** · takvim, haftalık e-posta, arama.
 6. **Sonra** · Fireflies, Excel dışa aktarım, Slack.
 
-## 8. Açık sorular
+## 9. Açık sorular
 
-- Manager kendi ekibindeki herkesin OKR'ını mı görür, yoksa yalnızca kendisine bağlı olanları mı? (Varsayım: ekibin tamamı.)
 - Danışman rolündeki kişi markanın haftalık temas hedefine sayılır mı? (Varsayım: hayır, panodaki gibi.)
-- Vault alanları sabit mi kalacak, yoksa ekipler kendi alanlarını ekleyebilecek mi? (Varsayım: sabit çekirdek + "ek bilgiler" serbest alanları.)
 - Google Workspace'te uygulamanın "internal" olarak kaydı için Cloud Console erişimi kimde?

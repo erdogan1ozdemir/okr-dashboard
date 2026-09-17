@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { users, accounts, sessions, verificationTokens } from "@/db/schema";
 import { isAllowedEmail, ALLOWED_EMAIL_DOMAIN } from "@/lib/authz";
 
@@ -10,7 +10,7 @@ import { isAllowedEmail, ALLOWED_EMAIL_DOMAIN } from "@/lib/authz";
  * refresh token accounts tablosunda saklanır (takvim senkronizasyonu için).
  */
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: DrizzleAdapter(db, {
+  adapter: DrizzleAdapter(getDb(), {
     usersTable: users,
     accountsTable: accounts,
     sessionsTable: sessions,

@@ -106,26 +106,29 @@ export const brandAssignments = pgTable("brand_assignments", {
   createdAt: createdAt(),
 }, (t) => [uniqueIndex("brand_assignment_unique").on(t.brandId, t.userId)]);
 
-/* vault: markanın sabit bilgileri, tek satır */
-export const brandVault = pgTable("brand_vault", {
-  brandId: text("brand_id").primaryKey().references(() => brands.id, { onDelete: "cascade" }),
-  backlinkBudgetMonthly: text("backlink_budget_monthly"),
-  contentBudgetMonthly: text("content_budget_monthly"),
-  infraTeam: text("infra_team"),                     // altyapı / geliştirme ajansı
-  itTeam: text("it_team"),
-  brandManager: text("brand_manager"),
-  internalTeamSize: text("internal_team_size"),
-  tools: text("tools"),
-  reportingRhythm: text("reporting_rhythm"),
-  extra: jsonb("extra").$type<Record<string, string>>().notNull().default({}),  // ekiplerin serbest alanları
+/* vault: her ekip kendi alan setini tanımlar (teamId boşsa ortak alan), marka başına değer girilir */
+export const vaultFieldDefs = pgTable("vault_field_defs", {
+  id: id(),
+  teamId: text("team_id").references(() => teams.id, { onDelete: "cascade" }),   // null = tüm ekipler için ortak
+  key: text("key").notNull(),                        // "backlink_budget_monthly"
+  label: text("label").notNull(),                    // "Aylık backlink bütçesi"
+  type: text("type").notNull().default("text"),      // "text" | "currency" | "number" | "textarea"
+  sortOrder: integer("sort_order").notNull().default(0),
+  isActive: boolean("is_active").notNull().default(true),
+}, (t) => [uniqueIndex("vault_field_team_key").on(t.teamId, t.key)]);
+
+export const brandVaultValues = pgTable("brand_vault_values", {
+  brandId: text("brand_id").notNull().references(() => brands.id, { onDelete: "cascade" }),
+  fieldId: text("field_id").notNull().references(() => vaultFieldDefs.id, { onDelete: "cascade" }),
+  value: text("value").notNull().default(""),
   updatedBy: text("updated_by").references(() => users.id),
   updatedAt: updatedAt(),
-});
+}, (t) => [primaryKey({ columns: [t.brandId, t.fieldId] })]);
 
 export const brandVaultHistory = pgTable("brand_vault_history", {
   id: id(),
   brandId: text("brand_id").notNull().references(() => brands.id, { onDelete: "cascade" }),
-  field: text("field").notNull(),
+  fieldId: text("field_id").notNull().references(() => vaultFieldDefs.id, { onDelete: "cascade" }),
   oldValue: text("old_value"),
   newValue: text("new_value"),
   changedBy: text("changed_by").references(() => users.id),
@@ -304,7 +307,7 @@ export const brandsRelations = relations(brands, ({ one, many }) => ({
   notes: many(brandNotes),
   signals: many(brandSignals),
   contacts: many(brandContacts),
-  vault: one(brandVault, { fields: [brands.id], references: [brandVault.brandId] }),
+  vaultValues: many(brandVaultValues),
 }));
 export const brandAssignmentsRelations = relations(brandAssignments, ({ one }) => ({
   brand: one(brands, { fields: [brandAssignments.brandId], references: [brands.id] }),

@@ -22,15 +22,7 @@ export const weekEntryInput = z.object({
 
 export const vaultInput = z.object({
   brandId: z.string().min(1),
-  backlinkBudgetMonthly: z.string().max(200).optional(),
-  contentBudgetMonthly: z.string().max(200).optional(),
-  infraTeam: z.string().max(200).optional(),
-  itTeam: z.string().max(200).optional(),
-  brandManager: z.string().max(200).optional(),
-  internalTeamSize: z.string().max(100).optional(),
-  tools: z.string().max(500).optional(),
-  reportingRhythm: z.string().max(200).optional(),
-  extra: z.record(z.string(), z.string().max(1000)).optional(),
+  values: z.array(z.object({ fieldId: z.string().min(1), value: z.string().max(2000) })).max(100),
 });
 
 export const stepToggleInput = z.object({ stepId: z.string().min(1), done: z.boolean(), note: z.string().max(2000).optional() });
