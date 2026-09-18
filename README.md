@@ -42,4 +42,5 @@ src/components/ui.tsx       yapısal bileşenler (Panel, Chip, Tick, Tabs...)
 src/app/(app)/*             ekranlar (bu-hafta, aylik, teslimler, okr, markalar, markalar/[slug], inbound-markalar, admin, ayarlar)
 scripts/seed.ts             tohum verisi (kurgusal)
 docs/TASARIM.md             tasarım dokümanı
+docs/CLAUDE-DESIGN-PROMPT.md  görsel tasarım için Claude Design'a verilecek prompt
 ```
