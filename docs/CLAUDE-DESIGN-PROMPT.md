@@ -41,20 +41,23 @@ Bağlam için: `docs/TASARIM.md` (ekranların ne yaptığı, yetki modeli, veri 
 | `/admin` | Yönetim | Liste ve tablo ağırlıklı |
 | `/ayarlar` | Ayarlar | İki kart |
 
-## Marka kimliği
+## Görsel dil
 
-Ajansın renk sistemi (başlangıç noktası, ton dengesini sen kur):
+Inbound tasarım sistemi sende zaten var; temeli oradan al. Bunun ötesinde istediğim his: yumuşak, sakin, iyi oturmuş bir arayüz. Apple ürünlerindeki gibi az sayıda ama doğru karar: net tipografik hiyerarşi, ölçülü kontrast, yumuşak yüzeyler, yerinde kullanılmış boşluk, gereksiz çizgi ve kutu yok. Çalışma aracı olduğunu da unutma; sakinlik bilgi yoğunluğunun önüne geçmemeli.
 
-- Koyu teal `#10332F` · ana mürekkep ve başlık rengi
-- Coral `#FF7B52`, koyu coral `#E85F36` · vurgu, içinde bulunulan hafta ve ay
-- Gold `#F5A623` · uyarı ve öncelik
-- Nötr `#F0EDE8` · sıcak zemin
-- Semantik: yeşil `#2E7D32` tamamlandı, kırmızı `#D32F2F` gecikmiş ve risk
-- Koyu tema zemini olarak `#0B1D1A` ailesi kullanılabilir
+Durum renkleri (tamamlandı, bu hafta, gecikmiş, risk seviyeleri) tasarım sisteminin semantik renklerinden gelsin. Açık ve koyu tema ikisi de gerekli; şu an yalnızca tek açık tema var.
 
-Tipografi: başlıklarda Bricolage Grotesque, gövdede Outfit, sayı ve tarihlerde tek aralıklı bir yüz (IBM Plex Mono gibi). Daha iyi bir eşleşme öneriyorsan gerekçesiyle değiştirebilirsin.
+## Görselleştirme önerilerine açığım
 
-İki tema da gereklidir: açık ve koyu. Şu an yalnızca tek açık tema var, koyu tema yok.
+Ekranlar şu an düz liste ve kart. Veriyi daha iyi anlatacak bir görselleştirme görüyorsan öner ve yap. Aklıma gelenler, zorunlu değil, kendi fikrin daha iyiyse onu yap:
+
+- haftalık temas ve efor için küçük ızgara ya da ısı haritası
+- teslim planı için hafta ekseninde zaman şeridi
+- marka risk seviyesinin zaman içindeki seyri
+- marka detayında notların ay ay yoğunluğu
+- devir özetinde markayı tek ekranda anlatan bir düzen
+
+Tek kural: süs için grafik ekleme. Bir görselleştirme, ancak bir soruyu listeden daha hızlı yanıtlıyorsa yerini hak eder. Semantik renk kuralı grafiklerde de geçerli.
 
 ## Dikkat etmeni istediklerim
 
@@ -86,6 +89,6 @@ Tipografi: başlıklarda Bricolage Grotesque, gövdede Outfit, sayı ve tarihler
 ## Nasıl ilerlemeni istiyorum
 
 1. Önce uygulamayı çalıştır, dokuz ekranı da gez.
-2. Bana kısa bir yön önerisi getir: palet, tipografi, yoğunluk kararı ve bir ekranın (tercihen `/bu-hafta` ya da marka detayı) görünümü. Onaylayınca diğerlerine geç.
+2. Bana kısa bir yön önerisi getir: yoğunluk ve hiyerarşi kararın, varsa önerdiğin görselleştirmeler ve bir ekranın (tercihen `/bu-hafta` ya da marka detayı) görünümü. Birden fazla yön deneyip karşılaştırmak istersen olur. Onaylayınca diğerlerine geç.
 3. Ortak bileşenlerden başla, sonra ekranlara uygula; aynı öğe her ekranda aynı görünsün.
 4. Bitirince değiştirdiğin dosyaları ve verdiğin kararları özetle.
